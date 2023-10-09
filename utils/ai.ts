@@ -1,6 +1,9 @@
 import { Pinecone, Vector } from "@pinecone-database/pinecone";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { OpenAI } from "langchain/llms/openai";
+import { loadQAStuffChain } from "langchain/chains";
+import { Document } from "langchain/document";
 import { chunk } from "lodash-es";
 
 // Setup env config
@@ -94,5 +97,29 @@ export const queryText = async function (input: QueryTextInput) {
     filter: { documentName: { $eq: documentName } },
   });
 
-  return queryResponse;
+  // Merge response into one string
+  const concatenatedPageContent = queryResponse.matches?.map((match) => match.metadata?.pageContent).join(" / ") ?? "";
+
+  // Setup LLM
+  const llm = new OpenAI({ openAIApiKey: config.OPENAI_API_KEY, temperature: 0.3 });
+
+  // Setup chain
+  const chain = loadQAStuffChain(llm);
+
+  // Get response
+  const response = await chain.call({
+    input_documents: [new Document({ pageContent: concatenatedPageContent })],
+    question,
+  });
+
+  // Setup response sources
+  const sources = queryResponse.matches?.map((x) => ({
+    pageContent: x.metadata?.pageContent,
+    score: x.score,
+  }));
+
+  return {
+    result: response.text,
+    sources,
+  };
 };

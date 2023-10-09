@@ -6,6 +6,10 @@
 
     <input v-model="question" placeholder="Ask a question" />
     <button @click="queryText()">Ask question</button>
+
+    <br />
+
+    {{ answer }}
   </div>
 </template>
 
@@ -26,17 +30,18 @@ const uploadText = async function () {
 };
 
 const question = ref("");
+const answer = ref("");
 
 const queryText = async function () {
   if (!question.value) {
     return;
   }
 
-  const { data, error } = await useFetch("/api/query-text", {
+  const { data } = await useFetch("/api/query-text", {
     method: "POST",
     body: { question: question.value, documentName },
   });
 
-  console.log({ data, error });
+  answer.value = data.value.result;
 };
 </script>
