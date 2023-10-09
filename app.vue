@@ -1,5 +1,5 @@
 <template>
-  <button>UploadText</button>
+  <button @click="uploadText()">UploadText</button>
 </template>
 
 <script setup lang="ts">
@@ -11,5 +11,14 @@ Worldwide production of apples in 2021 was 93 million tonnes, with China account
 `;
 const name = "apple-wikipedia";
 
-useFetch("/api/upload-text", { body: { name, text } });
+const uploadText = async function () {
+  console.log("Bonjour");
+
+  const { data, error } = await useFetch("/api/upload-text", {
+    method: "POST",
+    body: { name, text },
+  });
+
+  console.log({ data: data.value, error: error.value });
+};
 </script>

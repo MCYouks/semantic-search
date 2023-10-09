@@ -1,25 +1,37 @@
 import { Pinecone, Vector } from '@pinecone-database/pinecone'
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
+import { chunk } from 'lodash-es'
+
+// Setup env config
+const config = useRuntimeConfig()
 
 export const uploadText = async function (documentName: string, text: string) {
   // Setup Pinecone client
-  const pinecone = new Pinecone()
-  const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME ?? '')
+  const pinecone = new Pinecone({ apiKey: config.PINECONE_API_KEY, environment: config.PINECONE_ENVIRONMENT })
+  const pineconeIndex = pinecone.Index(config.PINECONE_INDEX_NAME ?? '')
 
   // Setup text splitter
+  const chunkSize = 1000
+  const chunkOverlap = 200
   const textSplitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000
+    chunkSize,
+    chunkOverlap
   })
+
+  console.log({ textSplitter })
 
   // Split text
   const chunks = await textSplitter.createDocuments([text])
+  const content = chunks.map(chunk => chunk.pageContent.replace(/\n/g, ' '))
+
+  console.log({ content })
 
   // Remove line breaks from chunks
   const documents = chunks.map(chunk => chunk.pageContent.replace(/\n/g, ' '))
 
   // Setup AI embeddings
-  const openAI = new OpenAIEmbeddings()
+  const openAI = new OpenAIEmbeddings({ openAIApiKey: config.OPENAI_API_KEY })
   const embeddings = await openAI.embedDocuments(documents)
 
   // Setup vector types
@@ -45,7 +57,9 @@ export const uploadText = async function (documentName: string, text: string) {
 
   // Prepare for batch upload
   const batchSize = 100
-  const batches: (typeof vectors)[] = _chunk(vectors, batchSize)
+  const batches: EmbeddingVector[][] = chunk(vectors, batchSize)
+
+  console.log(batches)
 
   // Upload chunks
   batches.forEach(async (vectors) => {
