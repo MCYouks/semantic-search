@@ -2,7 +2,7 @@ import { Pinecone, Vector } from '@pinecone-database/pinecone'
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 
-export const insertText = async function (documentName: string, text: string) {
+export const uploadText = async function (documentName: string, text: string) {
   // Setup Pinecone client
   const pinecone = new Pinecone()
   const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME ?? '')
