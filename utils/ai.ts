@@ -1,23 +1,11 @@
-import { Pinecone } from '@pinecone-database/pinecone'
-import { Document } from 'langchain/document'
+import { Pinecone, Vector } from '@pinecone-database/pinecone'
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 
-interface InsertDocumentInput extends Document {
-  pageContent: string;
-  metadata: {
-    name: string;
-  };
-}
-
-export const insertDocument = async function (document: InsertDocumentInput) {
+export const insertText = async function (documentName: string, text: string) {
   // Setup Pinecone client
   const pinecone = new Pinecone()
   const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME ?? '')
-
-  // Extract data from document
-  const text = document.pageContent
-  const documentName = document.metadata.name
 
   // Setup text splitter
   const textSplitter = new RecursiveCharacterTextSplitter({
@@ -34,15 +22,17 @@ export const insertDocument = async function (document: InsertDocumentInput) {
   const embeddings = await openAI.embedDocuments(chunks.map(chunk => chunk.pageContent.replace(/\n/g, ' ')))
 
   // Setup vector types
-  interface EmbeddingVectorMetadata extends Record<string, any> {
+
+  type VectorMetadata = {
     loc: string;
     pageContent: string;
     documentName: string
   }
-  type EmbeddingVector = {
+
+  interface EmbeddingVector extends Vector {
     id: string;
     values: number[];
-    metadata: EmbeddingVectorMetadata
+    metadata: VectorMetadata
   }
 
   // Create vectors
