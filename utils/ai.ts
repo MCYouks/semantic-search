@@ -3,10 +3,10 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 import { chunk } from 'lodash-es'
 
-// Setup env config
-const config = useRuntimeConfig()
-
 export const uploadText = async function (documentName: string, text: string) {
+  // Setup env config
+  const config = useRuntimeConfig()
+
   // Setup Pinecone client
   const pinecone = new Pinecone({ apiKey: config.PINECONE_API_KEY, environment: config.PINECONE_ENVIRONMENT })
   const pineconeIndex = pinecone.Index(config.PINECONE_INDEX_NAME ?? '')
