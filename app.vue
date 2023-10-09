@@ -1,10 +1,12 @@
 <template>
-  <button @click="uploadText()">UploadText</button>
+  <div>
+    <button @click="uploadText()">UploadText</button>
 
-  <br />
+    <br />
 
-  <input v-model="question" placeholder="Ask a question" />
-  <button @click="queryText()">Ask question</button>
+    <input v-model="question" placeholder="Ask a question" />
+    <button @click="queryText()">Ask question</button>
+  </div>
 </template>
 
 <script setup lang="ts">
