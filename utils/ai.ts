@@ -27,13 +27,8 @@ export const uploadText = async function (input: UploadTextInput) {
     chunkOverlap,
   });
 
-  console.log({ textSplitter });
-
   // Split text
   const chunks = await textSplitter.createDocuments([text]);
-  const content = chunks.map((chunk) => chunk.pageContent.replace(/\n/g, " "));
-
-  console.log({ content });
 
   // Remove line breaks from chunks
   const documents = chunks.map((chunk) => chunk.pageContent.replace(/\n/g, " "));
@@ -66,8 +61,6 @@ export const uploadText = async function (input: UploadTextInput) {
   // Prepare for batch upload
   const batchSize = 100;
   const batches: EmbeddingVector[][] = chunk(vectors, batchSize);
-
-  console.log(batches);
 
   // Upload chunks
   batches.forEach(async (vectors) => {
