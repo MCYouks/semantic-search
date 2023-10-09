@@ -1,5 +1,10 @@
 <template>
   <button @click="uploadText()">UploadText</button>
+
+  <br />
+
+  <input v-model="question" placeholder="Ask a question" />
+  <button @click="queryText()">Ask question</button>
 </template>
 
 <script setup lang="ts">
@@ -9,16 +14,27 @@ Apples grown from seed tend to be very different from those of their parents, an
 There are more than 7,500 cultivars of apples. Different cultivars are bred for various tastes and uses, including cooking, eating raw, and cider production. Trees and fruit are prone to fungal, bacterial, and pest problems, which can be controlled by a number of organic and non-organic means. In 2010, the fruit's genome was sequenced as part of research on disease control and selective breeding in apple production.
 Worldwide production of apples in 2021 was 93 million tonnes, with China accounting for nearly half of the total.
 `;
-const name = "apple-wikipedia";
+const documentName = "apple-wikipedia";
 
 const uploadText = async function () {
-  console.log("Bonjour");
-
-  const { data, error } = await useFetch("/api/upload-text", {
+  await useFetch("/api/upload-text", {
     method: "POST",
-    body: { name, text },
+    body: { documentName, text },
+  });
+};
+
+const question = ref("");
+
+const queryText = async function () {
+  if (!question.value) {
+    return;
+  }
+
+  const { data, error } = await useFetch("/api/query-text", {
+    method: "POST",
+    body: { question: question.value, documentName },
   });
 
-  console.log({ data: data.value, error: error.value });
+  console.log({ data, error });
 };
 </script>

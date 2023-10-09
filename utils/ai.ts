@@ -3,9 +3,17 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 import { chunk } from 'lodash-es'
 
-export const uploadText = async function (documentName: string, text: string) {
-  // Setup env config
-  const config = useRuntimeConfig()
+// Setup env config
+const config = useRuntimeConfig()
+
+type UploadTextInput = {
+  text: string
+  documentName: string;
+}
+
+export const uploadText = async function (input: UploadTextInput) {
+  // Extract data from input
+  const { documentName, text } = input
 
   // Setup Pinecone client
   const pinecone = new Pinecone({ apiKey: config.PINECONE_API_KEY, environment: config.PINECONE_ENVIRONMENT })
@@ -65,4 +73,33 @@ export const uploadText = async function (documentName: string, text: string) {
   batches.forEach(async (vectors) => {
     await pineconeIndex.upsert(vectors)
   })
+}
+
+type QueryTextInput = {
+  question: string,
+  documentName: string;
+}
+
+export const queryText = async function (input: QueryTextInput) {
+  // Extract data from input
+  const { question, documentName } = input
+
+  // Setup AI embeddings
+  const openAI = new OpenAIEmbeddings({ openAIApiKey: config.OPENAI_API_KEY })
+  const embedding = await openAI.embedQuery(question)
+
+  // Setup Pinecone client
+  const pinecone = new Pinecone({ apiKey: config.PINECONE_API_KEY, environment: config.PINECONE_ENVIRONMENT })
+  const pineconeIndex = pinecone.Index(config.PINECONE_INDEX_NAME ?? '')
+
+  // Query response
+  const queryResponse = await pineconeIndex.query({
+    topK: 10,
+    vector: embedding,
+    includeMetadata: true,
+    includeValues: true,
+    filter: { documentName: { $eq: documentName } }
+  })
+
+  return queryResponse
 }
