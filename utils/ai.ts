@@ -15,24 +15,20 @@ export const insertText = async function (documentName: string, text: string) {
   // Split text
   const chunks = await textSplitter.createDocuments([text])
 
-  console.log({ chunks })
+  // Remove line breaks from chunks
+  const documents = chunks.map(chunk => chunk.pageContent.replace(/\n/g, ' '))
 
   // Setup AI embeddings
   const openAI = new OpenAIEmbeddings()
-  const embeddings = await openAI.embedDocuments(chunks.map(chunk => chunk.pageContent.replace(/\n/g, ' ')))
+  const embeddings = await openAI.embedDocuments(documents)
 
   // Setup vector types
-
-  type VectorMetadata = {
-    loc: string;
-    pageContent: string;
-    documentName: string
-  }
-
   interface EmbeddingVector extends Vector {
-    id: string;
-    values: number[];
-    metadata: VectorMetadata
+    metadata: {
+      loc: string;
+      pageContent: string;
+      documentName: string
+    }
   }
 
   // Create vectors
