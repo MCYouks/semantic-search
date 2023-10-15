@@ -25,6 +25,12 @@
   },
   "dependencies": {
     "@pinecone-database/pinecone": "^1.1.0",
-    "langchain": "^0.0.163"
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "langchain": "^0.0.163",
+    "lucide-vue-next": "^0.287.0",
+    "radix-vue": "^0.4.1",
+    "tailwind-merge": "^1.14.0",
+    "tailwindcss-animate": "^1.0.7"
   }
 }
