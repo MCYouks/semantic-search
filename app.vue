@@ -1,15 +1,16 @@
 <template>
-  <div>
-    <button @click="uploadText()">UploadText</button>
-
-    <br />
-
-    <input v-model="question" placeholder="Ask a question" />
-    <button @click="queryText()">Ask question</button>
-
-    <br />
-
-    {{ answer }}
+  <div class="h-screen flex flex-col">
+    <div class="grid grid-cols-2 flex-grow">
+      <div class="bg-yellow-100 p-6">
+        <input />
+        <button @click="uploadText()">UploadText</button>
+      </div>
+      <div class="bg-green-100 p-6">
+        <input v-model="question" placeholder="Ask a question" />
+        <button @click="queryText()">Ask question</button>
+        {{ answer }}
+      </div>
+    </div>
   </div>
 </template>
 
