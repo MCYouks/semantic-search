@@ -10,6 +10,14 @@ export default defineNuxtConfig({
     PINECONE_ENVIRONMENT: process.env.PINECONE_ENVIRONMENT,
   },
 
+  vite: {
+    vue: {
+      script: {
+        defineModel: true,
+      },
+    },
+  },
+
   lodash: {
     prefix: "_",
     upperAfterPrefix: false,
