@@ -9,10 +9,20 @@
           <UiButton @click="uploadText()">UploadText</UiButton>
         </div>
       </div>
-      <div class="bg-stone-100 p-6">
-        <input v-model="question" placeholder="Ask a question" />
-        <button @click="queryText()">Ask question</button>
-        {{ answer }}
+      <div class="grid grid-rows-[1fr_auto] gap-4 p-6 bg-stone-50">
+        <div class="flex flex-col gap-4">
+          <UiLabel>Réponse</UiLabel>
+          <div class="rounded-md border border-input bg-background px-3 py-2 text-sm">
+            {{ answer }}
+          </div>
+        </div>
+        <div class="flex flex-col gap-4 pt-4 border-t">
+          <UiLabel>Question</UiLabel>
+          <div class="flex gap-4">
+            <UiInput v-model="question" placeholder="Ask a question" />
+            <UiButton @click="queryText()">Ask</UiButton>
+          </div>
+        </div>
       </div>
     </div>
   </div>
